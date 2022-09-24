@@ -9,9 +9,9 @@ INSERT INTO roles(title, salary, department_id)
 VALUES
 ('Project Manager', 200000, 1),
 ('Sales Rep', 50000, 2),
+('Receptionist', 20000, 3);
 ('HR Representative', 36000, 3),
 ('Frontend Developer', 35000, 1),
-('Receptionist', 20000, 3);
 ('Backend', 30000, 2);
 
 INSERT INTO employee(first_name, last_name, role_id, manager_id) 
@@ -25,3 +25,4 @@ VALUES
 ("Katie", "Cormack", 4, 1),
 ("Kendall", "Mancino", 3, 1),
 ("Mark", "Rowley", 3, 1);
+

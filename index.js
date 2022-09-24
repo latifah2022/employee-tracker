@@ -10,3 +10,16 @@ const db = mysql.createConnection(
     },
     console.log("connected to db")
 );
+
+const getDepartments = () => {
+    db.query("SELECT * FROM departments", (err, data) => {
+        if (err) {
+            console.log(err)
+            db.end();
+        } else {
+            console.table(data);
+            promptUser();
+        }
+    }
+    )
+};
