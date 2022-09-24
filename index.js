@@ -36,3 +36,66 @@ const getEmployees = () => {
     }
     )
 };
+
+const addDepartment = () => {
+    inquirer.prompt(departmentPrompt)
+        .then(choice => {
+            db.query(`INSERT INTO departments (name) VALUES(?)`, [choice.name], (err, data) => {
+                if (err) {
+                    console.log(err);
+                    db.end();
+                } else {
+                    console.log("department added");
+                    viewDepartments();
+                }
+            })
+
+        })
+};
+
+const addRole = () => {
+    db.query("SELECT * FROM departments", (err, data) => {
+        if (err) {
+            console.log(err)
+            db.end();
+        } else {
+            const inqDept = data.map(department => {
+                return {
+                    name: department.name,
+                    value: department.id
+                }
+            })
+            inquirer
+                .prompt([
+                    {
+                        type: "list",
+                        message: "Department: ",
+                        choices: inqDept,
+                        name: "department_id"
+                    },
+                    {
+                        type: "input",
+                        message: "Job Title: ",
+                        name: "title"
+                    },
+                    {
+                        type: "input",
+                        message: "Salary: ",
+                        name: "salary"
+                    }
+                ]).then(answers => {
+                    db.query(`INSERT INTO roles (title,salary,department_id) VALUES(?,?,?)`,
+                        [answers.title, answers.salary, answers.department_id], (err, data) => {
+                            if (err) {
+                                console.log(err);
+                                db.destroy();
+                            } else {
+                                console.log("role added");
+                                viewRoles();
+                            }
+                        }
+                    )
+                });
+        }
+    })
+};
