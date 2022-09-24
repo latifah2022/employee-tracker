@@ -99,3 +99,57 @@ const addRole = () => {
         }
     })
 };
+
+const addEmployee = () => {
+    db.query("SELECT * FROM roles", (err, data) => {
+        if (err) {
+            console.log(err)
+            db.end();
+        } else {
+            const inqRoles = data.map(role => {
+                return {
+                    name: role.title,
+                    value: role.id
+                }
+            });
+            inquirer
+                .prompt([
+                    {
+                        type: "list",
+                        message: "Job Title: ",
+                        choices: inqRoles,
+                        name: "role_id"
+                    },
+                    {
+                        type: "input",
+                        message: "Employee First Name: ",
+                        name: "first_name"
+                    },
+                    {
+                        type: "input",
+                        message: "Employee Last Name: ",
+                        name: "last_name"
+                    },
+                    {
+                        type: "input",
+                        message: "Manager ID(optional): ",
+                        name: "manager_id"
+                    }
+
+                ]).then(answers => {
+                    db.query(`INSERT INTO employee (first_name,last_name,role_id, manager_id) VALUES(?,?,?,?)`,
+                        [answers.first_name, answers.last_name, answers.role_id, answers.manager_id], (err, data) => {
+                            if (err) {
+                                console.log(err);
+                                db.destroy();
+                            } else {
+                                console.log("employee added");
+                                viewEmployee();
+                            }
+                        }
+                    )
+                });
+        }
+    })
+};
+
