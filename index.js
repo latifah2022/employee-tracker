@@ -5,10 +5,10 @@ const db = mysql.createConnection(
     {
         host: 'localhost',
         user: 'root',
-        password: 'password',
+        password: 'latifah',
         database: 'employee_db'
     },
-    console.log("connected to db")
+    console.log("connected")
 );
 
 const getDepartments = () => {
@@ -153,3 +153,41 @@ const addEmployee = () => {
     })
 };
 
+const promptUser = () => {
+    inquirer
+        .prompt({
+            type: "list",
+            choices: ["view departments", "view roles", "view employee", "add new department", "add new role", "add new employee", "quit"],
+            message: "choose an option",
+            name: "choice"
+        })
+        .then(({ choice }) => {
+            switch (choice) {
+                case "view departments":
+                    getDepartments();
+                    break;
+                case "view employee":
+                    getEmployees();
+                    break;
+
+                case "view roles":
+                    getRoles();
+                    break;
+
+                case "add new department":
+                    addDepartment();
+                    break;
+
+                case "add new employee":
+                    addEmployee();
+                    break;
+                case "add new role":
+                    addRole();
+                    break;
+                default:
+                    console.log("No option selected.");
+                break;
+            }
+        });
+};
+promptUser();
