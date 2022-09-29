@@ -213,4 +213,52 @@ const addEmployee = () => {
     })
 };
 
+const updateEmp = () => {
+    connection.query(
+        'SELECT CONCAT(employees.first_name, " ",employees.last_name) AS full_name, employees.id as empl_id, roles.* FROM employees RIGHT JOIN roles on employees.role_id = roles.id',
+        function (err, res) {
+            if (err) throw err;
+            let employeeList = res.map(employee => ({
+                full_name: employee.full_name,
+                id: employee.empl_id,
+                value: [employee.full_name, employee.empl_id]
+            }))
+
+            let roleList = res.map(roles => ({
+                title: roles.title,
+                id: roles.id,
+                value: [roles.title, roles.id]
+            }));
+
+            inquirer.prompt([{
+                type: 'list',
+                name: 'employee',
+                choices: employeeList,
+                message: 'Which employee would you like to edit?'
+            },
+            {
+                type: 'list',
+                name: 'newRole',
+                choices: roleList,
+                message: 'What role do you want to assign to this employee?'
+            }
+            ])
+
+            .then((answer) => {
+                let editID = answer.employee[1];
+                let newRoleId = answer.newRole[1];
+                connection.query(`UPDATE employees SET role_id=${newRoleId} WHERE id=${editID};`,
+                    function (err, res) {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                        console.table(res);
+                        moreActions();
+                    }
+                    })
+            })
+        }
+    )
+};
+
 promptUser();
