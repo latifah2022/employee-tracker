@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const cTable = require('console.table');
+const consoleTable = require('console.table');
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -10,6 +10,54 @@ const db = mysql.createConnection(
     },
     console.log("connected")
 );
+
+const promptUser = () => {
+    inquirer
+        .prompt({
+            type: "list",
+            choices: ["view departments", "view roles", "view employee", "add new department", "add new role", "add new employee", "quit"],
+            message: "choose an option",
+            name: "choice"
+        })
+        .then(({ choice }) => {
+            switch (choice) {
+                case "view departments":
+                    getDepartments();
+                    break;
+                case "view employee":
+                    getEmployees();
+                    break;
+
+                case "view roles":
+                    getRoles();
+                    break;
+
+                case "add new department":
+                    addDepartment();
+                    break;
+
+                case "add new employee":
+                    addEmployee();
+                    break;
+                case "add new role":
+                    addRole();
+                    break;
+                case "Update Employee Role":
+                    updateEmp();
+                    break;
+        
+                case "Exit Program":
+                    console.log("Goodbye!");
+                    connection.end();
+                    break;
+        
+                default:
+                    console.log("No option selected.");
+                    break;    
+            }
+        });
+};
+
 
 const getDepartments = () => {
     db.query("SELECT * FROM departments", (err, data) => {
@@ -35,6 +83,18 @@ const getEmployees = () => {
         }
     }
     )
+};
+
+function getRoles() {
+    connection.query(`SELECT A.id, A.title, A.salary, B.department_name FROM roles AS A LEFT JOIN departments AS B ON B.id = A.department_id`,
+        function (err, results) {
+            if (err)  {
+            console.table(results);
+            } else {
+                viewRoles();
+            }
+        }
+    );
 };
 
 const addDepartment = () => {
@@ -153,41 +213,4 @@ const addEmployee = () => {
     })
 };
 
-const promptUser = () => {
-    inquirer
-        .prompt({
-            type: "list",
-            choices: ["view departments", "view roles", "view employee", "add new department", "add new role", "add new employee", "quit"],
-            message: "choose an option",
-            name: "choice"
-        })
-        .then(({ choice }) => {
-            switch (choice) {
-                case "view departments":
-                    getDepartments();
-                    break;
-                case "view employee":
-                    getEmployees();
-                    break;
-
-                case "view roles":
-                    getRoles();
-                    break;
-
-                case "add new department":
-                    addDepartment();
-                    break;
-
-                case "add new employee":
-                    addEmployee();
-                    break;
-                case "add new role":
-                    addRole();
-                    break;
-                default:
-                    console.log("No option selected.");
-                break;
-            }
-        });
-};
 promptUser();

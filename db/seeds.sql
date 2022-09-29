@@ -3,7 +3,8 @@ INSERT INTO departments(name)
 VALUES 
 ('Engineering'),
 ('Sales'),
-('Human Resources');
+('Human Resources'),
+('Leagal');
 
 INSERT INTO roles(title, salary, department_id)
 VALUES
@@ -12,7 +13,8 @@ VALUES
 ('Receptionist', 20000, 3);
 ('HR Representative', 36000, 3),
 ('Frontend Developer', 35000, 1),
-('Backend', 30000, 2);
+('Backend', 30000, 2),
+('Lawywer', 40000, 4);
 
 INSERT INTO employee(first_name, last_name, role_id, manager_id) 
 VALUES
