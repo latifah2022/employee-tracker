@@ -15,7 +15,7 @@ const promptUser = () => {
     inquirer
         .prompt({
             type: "list",
-            choices: ["view departments", "view roles", "view employee", "add new department", "add new role", "add new employee", "quit"],
+            choices: ["view departments", "view roles", "view employee", "add new department", "add new role", "add new employee", "Update Employee Role", "quit"],
             message: "choose an option",
             name: "choice"
         })
@@ -85,28 +85,32 @@ const getEmployees = () => {
     )
 };
 
-function getRoles() {
-    connection.query(`SELECT A.id, A.title, A.salary, B.department_name FROM roles AS A LEFT JOIN departments AS B ON B.id = A.department_id`,
-        function (err, results) {
+const  getRoles = () => {
+    db.query("SELECT roles.id, roles.title, roles.salary, roles.department_id FROM roles LEFT JOIN departments AS employee ON employee.id = roles.department_id", (err, results) => {
             if (err)  {
-            console.table(results);
+            console.log(err);
             } else {
-                viewRoles();
+                console.table(results)
+                promptUser();
             }
         }
     );
 };
 
 const addDepartment = () => {
-    inquirer.prompt(departmentPrompt)
+    inquirer.prompt( [{
+        type: "input",
+        message: "What is the department?",
+        name: "department"
+    }])
         .then(choice => {
-            db.query(`INSERT INTO departments (name) VALUES(?)`, [choice.name], (err, data) => {
+            db.query(`INSERT INTO departments (name) VALUES(?)`, [choice.department], (err, data) => {
                 if (err) {
                     console.log(err);
                     db.end();
                 } else {
                     console.log("department added");
-                    viewDepartments();
+                    getDepartments();
                 }
             })
 
@@ -151,7 +155,7 @@ const addRole = () => {
                                 db.destroy();
                             } else {
                                 console.log("role added");
-                                viewRoles();
+                                getRoles();
                             }
                         }
                     )
@@ -197,14 +201,20 @@ const addEmployee = () => {
                     }
 
                 ]).then(answers => {
+                    var managerId = 0
+                    if (answers.manager_id === "") {
+                        managerId = null     
+                    } else {
+                        managerId = answers.manager_id;
+                    }
                     db.query(`INSERT INTO employee (first_name,last_name,role_id, manager_id) VALUES(?,?,?,?)`,
-                        [answers.first_name, answers.last_name, answers.role_id, answers.manager_id], (err, data) => {
+                        [answers.first_name, answers.last_name, answers.role_id, managerId], (err, data) => {
                             if (err) {
                                 console.log(err);
                                 db.destroy();
                             } else {
                                 console.log("employee added");
-                                viewEmployee();
+                                getEmployees();
                             }
                         }
                     )
@@ -214,8 +224,8 @@ const addEmployee = () => {
 };
 
 const updateEmp = () => {
-    connection.query(
-        'SELECT CONCAT(employees.first_name, " ",employees.last_name) AS full_name, employees.id as empl_id, roles.* FROM employees RIGHT JOIN roles on employees.role_id = roles.id',
+    db.query(
+        'SELECT CONCAT(employee.first_name, " ",employee.last_name) AS full_name, employee.id as empl_id, roles.* FROM employee RIGHT JOIN roles on employee.role_id = roles.id',
         function (err, res) {
             if (err) throw err;
             let employeeList = res.map(employee => ({
@@ -247,13 +257,13 @@ const updateEmp = () => {
             .then((answer) => {
                 let editID = answer.employee[1];
                 let newRoleId = answer.newRole[1];
-                connection.query(`UPDATE employees SET role_id=${newRoleId} WHERE id=${editID};`,
+                db.query(`UPDATE employee SET role_id=${newRoleId} WHERE id=${editID};`,
                     function (err, res) {
                         if (err) {
                             console.log(err)
                         } else {
                         console.table(res);
-                        moreActions();
+                        promptUser();
                     }
                     })
             })

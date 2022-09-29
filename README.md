@@ -26,7 +26,9 @@ Employ tracker helps the company manage
 
 ## Links
 
+![GitHub](https://github.com/latifah2022/employee-tracker)
 
+![Video](https://drive.google.com/file/d/1GPJ8wU0jR8hNwTcRfZo_ARcxLPUB6Myk/view)
 
 
 ## Mock-Up
